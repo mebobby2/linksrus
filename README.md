@@ -1,8 +1,25 @@
 # Links R Us
 
+## Prerequisites
+### Run
+* Go
+* CockroachDB
+    * brew install cockroachdb/tap/cockroach
+    * cockroach start-single-node --insecure --http-port=26256 --host=localhost
+    * cockroach sql --insecure -e 'CREATE DATABASE linkgraph;'
+* Elasticsearch
+    * java11
+    * brew install elasticsearch
+    * to start: elasticsearch
+
+### Test
+* export CDB_DSN='postgresql://root@localhost:26257/linkgraph?sslmode=disable'
+* make run-cdb-migrations
+* export ES_NODES='http://localhost:9200'
 ## Quick Notes
 * A facade is a software design pattern that abstracts the complexity of one or more software components behind a simple interface.
 In the context of microservice-based design, the facade pattern allows us to transparently compose or aggregate data across multiple, specialized microservices while providing a simple API for the facade clients to access it.
+* Most cloud providers run an internal metadata service that each computing node can query to obtain information about itself. This service is typically accessed via a link-local address such as 169.254.169.254 and nodes can perform simple HTTP GET requests to retrieve the information they are interested in.
 
 ## Notes
 ### Software Enginering Roles
@@ -156,6 +173,30 @@ From a chaos engineering perspective, the sidecar proxy is an easy avenue for in
 * Configure the proxy to drop outgoing requests with probability P. This emulates a degraded network connection.
 * Configure the proxy for a single service to drop all outgoing traffic to another service. At the same time, all the other service proxies are set up to forward traffic as usual. This emulates a network partition.
 
+### User Stories
+One final thing that I would like to point out is that, while each story will record a need for a particular feature, all of them will be completely devoid of any sort of implementation detail. This is quite intentional, and congruent with the recommended practices when working with any Agile framework. Our goal is to defer any technical implementation decisions up to the last possible moment. If we were to decide up-front about how we are going to implement each user story, we would be placing unnecessary constraints on our development process, hence limiting our flexibility and the amount of work we can achieve given a particular time budget.
+
+### Miscellaneous
+#### What is Link-local addressing?
+A PC automatically acquires a 169.254.x.x/16 address if it does not receive an IP address from a DHCP server. If you disable the DHCP server on your home or lab network and issue the "ipconfig/release" and "ipconfig/renew" commands, your PC will receive a 169.254.x.x address.
+
+The purpose of these self-assigned link-local addresses is to facilitate communication with other hosts within the subnet even in the absence of external address configuration (via manual input or DHCP). Unlike in IPv6, implementation of IPv4 link-local addresses is recommended only in the absence of a normal, routable address. Hosts pseudo-randomly generate the last two octets of the address to mitigate address conflicts. Because of the broadcast nature of some local networking protocols (for example, Microsoft's NetBIOS), hosts may be able to detect one another even without any preexisting knowledge of the address scheme.
+
+https://networkengineering.stackexchange.com/questions/24749/what-is-link-local-addressing
+
+#### CQRS
+The CQRS pattern belongs to the family of architectural patterns. The key idea behind CQRS is to separate the write and read models exposed by a particular component so they can be optimized in isolation. Commands refer to operations that mutate the state of the model, whereas queries retrieve and return the current model state.
+
+This separation allows us to execute different business logic paths for reads and writes, and, in effect, enables us to implement complex access patterns. For example, writes could be a synchronous process whereas reads might be asynchronous and provide a limited view over the data.
+
+As another example, the component could utilize separate data stores for writes and reads. Writes would eventually trickle into the read store but perhaps the read store data could also be augmented with external data obtained from other downstream components.
+
+## Issues
+### Elasticsearch start failure
+* sudo mkdir /usr/local/var/lib/elasticsearch
+* sudo chown -R bobbylei /usr/local/var/lib
+## Source Code
+https://github.com/PacktPublishing/Hands-On-Software-Engineering-with-Golang
 ## Upto
 Page 174
 
