@@ -176,6 +176,40 @@ From a chaos engineering perspective, the sidecar proxy is an easy avenue for in
 ### User Stories
 One final thing that I would like to point out is that, while each story will record a need for a particular feature, all of them will be completely devoid of any sort of implementation detail. This is quite intentional, and congruent with the recommended practices when working with any Agile framework. Our goal is to defer any technical implementation decisions up to the last possible moment. If we were to decide up-front about how we are going to implement each user story, we would be placing unnecessary constraints on our development process, hence limiting our flexibility and the amount of work we can achieve given a particular time budget.
 
+### Databases
+#### Key Value Stores
+* memcached, AWS DynamoDB, LevelDB, and SSD-optimized RocksDB
+* The data access patterns (insertions, deletions, and lookups) that are used by key-value stores make data partitioning across multiple nodes much easier compared to other database technologies. This property allows key-value stores to scale horizontally so as to accommodate increased traffic demand.
+* Use cases
+    * Caches! We can use a key-value store as a general-purpose cache for all sorts of things. We could, for instance, cache web pages for a CDN service or store the results of frequently used database queries to reduce the response time for a web application.
+    * A distributed store for session data: Imagine for a moment that we operate a high-traffic website. To handle the traffic, we would normally spin up a bunch of backend servers and place them behind a load balancer. Unless our load balancer had built-in support for sticky sessions (always sending requests from the same user to the same backend server), each request would be handled by a different backend server. This could cause issues with stateful applications as they require access to the session data associated with each user. If we tagged each user request with a unique per-user ID, we could use that as a key and retrieve the session data from a key-value store.
+    * A storage layer for a database system. The properties of key-value stores make them a very attractive low-level primitive for implementing more sophisticated types of databases. For example, relational databases such as CockroachDB [5] and NoSQL databases such as Apache Cassandra [2] are prime examples of systems built on top of key-value stores.
+* The main caveat of key-value stores is that we cannot efficiently search within the stored data without introducing some kind of auxiliary data structure to facilitate the role of an index.
+
+#### Relational
+* The standardized way to access and query relational databases is via the use of an English- like structured query language (SQL), which is actually a subset of various domain-specific languages:
+    * A data definition language, which includes commands for managing the database schema; for example, creating, altering, or dropping tables, indexes, and constraints
+    * A data manipulation language, which supports a versatile set of commands for inserting, deleting, and, of course, querying the database contents
+    * A data control language, which provides a streamlined way to control the level of access that individual users have to the database
+    * A transaction control language, which allows database users to start, commit, or abort database transactions
+* In terms of performance, relational databases such as PostgreSQL [18] and MySQL [17] are generally easy to scale vertically. Switching to a beefier CPU and/or adding more memory to your database server is more or less a standard operating procedure for increasing the queries per second (QPS) or transactions per second (TPS) that the DB can handle. On the other hand, scaling relational databases horizontally is much harder and typically depends on the type of workload you have.
+    * For write-heavy workloads, we usually resort to techniques such as data sharding. Data sharding allows us to split (partition) the contents of one or more tables into multiple database nodes. This partitioning is achieved by means of a per-row shard key, which dictates which node is responsible for storing each row of the table. One caveat of this approach is that it introduces additional complexity at query time. While writes are quite efficient, reads are not trivial as the database might need to query each individual node and then aggregate the results together in order to answer even a simple query such as SELECT COUNT(*) FROM X.
+    * On the other hand, if our workloads are read-heavy, horizontal scaling is usually achieved by spinning up read-replicas, which mirror updates to one or more primary nodes. Writes are always routed to the primary nodes while reads are handled by the read-replicas (ideally) or even by the primaries if the read-replicas cannot be reached.
+* While relational databases are a great fit for transactional workloads and complex queries, they are not the best tool for querying hierarchical data with arbitrary nesting or for modeling graph-like structures.
+
+#### NoSQL
+* To achieve a performance boost over relational databases, NoSQL databases have to sacrifice something! Being distributed systems, NoSQL databases must adhere to the rules of the CAP theorem
+* Let's briefly analyze the behavior as to how each of the CAP configurations reacts in the presence of errors:
+    * Consistency – Partition (CP) tolerance: Distributed systems in this category typically use a voting protocol to ensure that the majority of nodes agree that they have the most recent version of the stored data; in other words, they reach a quorum. This allows the system to recover from network partitioning events. However, if not enough nodes are available to reach quorum, the system will return an error to clients as data consistency is preferred over availability.
+    * Availability – Partition (AP) tolerance: This class of distributed systems favors availability over consistency. Even in the case of a network partition, an AP system will try to process read requests, although stale data may be returned to the clients.
+    * Consistency – Availability (CA): In practice, all distributed systems are, to some extent, affected by network partitions. Therefore, a pure CA type of system is not really feasible unless, of course, we are talking about a single-node system. We could probably classify a single-node deployment of a traditional relational database as a CA system.
+* At the end of the day, the choice of an appropriate NoSQL solution largely depends on your particular use case. What happens, though, if the use case requires all three of these properties? Are we simply out of luck?
+    * Fortunately, over the years, several NoSQL solutions (for example, Cassandra [2]) have evolved support for what is now referred to as tunable consistency. Tunable consistency allows clients to specify their desired level of consistency on a per-query basis. For example, when creating a new user account, we would typically opt for strong consistency semantics. On the other hand, when querying the number of views of a popular video, we could dial down the desired level of consistency and settle for an approximate, eventually-consistent, value.
+
+#### Document database
+* Document databases are specialized NoSQL databases that store, index, and query complex and possibly deeply nested document-like objects.
+* MongoDB, CouchDB, and Elasticsearch
+
 ### Miscellaneous
 #### What is Link-local addressing?
 A PC automatically acquires a 169.254.x.x/16 address if it does not receive an IP address from a DHCP server. If you disable the DHCP server on your home or lab network and issue the "ipconfig/release" and "ipconfig/renew" commands, your PC will receive a 169.254.x.x address.
@@ -198,6 +232,6 @@ As another example, the component could utilize separate data stores for writes 
 ## Source Code
 https://github.com/PacktPublishing/Hands-On-Software-Engineering-with-Golang
 ## Upto
-Page 174
+Page 213
 
-Section 3
+Iterating Links and Edges
