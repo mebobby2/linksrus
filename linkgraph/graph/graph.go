@@ -3,7 +3,7 @@ package graph
 import (
 	"time"
 
-	"githuh.com/google/uuid"
+	"github.com/google/uuid"
 )
 
 type Link struct {
@@ -12,11 +12,29 @@ type Link struct {
 	RetrieveAt time.Time
 }
 
-type Link struct {
+type Edge struct {
 	ID        uuid.UUID
 	Src       uuid.UUID
 	Dst       uuid.UUID
 	UpdatedAt time.Time
+}
+
+type Iterator interface {
+	Next() bool
+	Error() error
+	Close() error
+}
+
+type LinkIterator interface {
+	Iterator
+
+	Link() *Link
+}
+
+type EdgeIterator interface {
+	Iterator
+
+	Edge() *Edge
 }
 
 type Graph interface {
