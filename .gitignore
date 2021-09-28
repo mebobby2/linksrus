@@ -15,3 +15,5 @@
 # vendor/
 
 cockroach-data
+
+coverage.txt
