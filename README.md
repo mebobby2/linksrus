@@ -25,6 +25,7 @@
 * A facade is a software design pattern that abstracts the complexity of one or more software components behind a simple interface.
 In the context of microservice-based design, the facade pattern allows us to transparently compose or aggregate data across multiple, specialized microservices while providing a simple API for the facade clients to access it.
 * Most cloud providers run an internal metadata service that each computing node can query to obtain information about itself. This service is typically accessed via a link-local address such as 169.254.169.254 and nodes can perform simple HTTP GET requests to retrieve the information they are interested in.
+* Introduced in Go 1.11, Go Modules aim to replace Go Workspaces and the GOPATH. It is recommended to start using modules
 
 ## Notes
 ### Software Enginering Roles
@@ -237,6 +238,6 @@ As another example, the component could utilize separate data stores for writes 
 ## Source Code
 https://github.com/PacktPublishing/Hands-On-Software-Engineering-with-Golang
 ## Upto
-Page 213
+Page 216
 
-Iterating Links and Edges
+Implementing an in-memory graph store
