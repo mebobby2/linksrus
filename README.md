@@ -11,11 +11,16 @@
     * java11
     * brew install elasticsearch
     * to start: elasticsearch
+* dependencies
+    * start new module: go mod init github.com/mebobby2/linksrus
+    * add new example: go get github.com/google/uuid
+    * to install missing dependencies: go build or go test
 
 ### Test
 * export CDB_DSN='postgresql://root@localhost:26257/linkgraph?sslmode=disable'
 * make run-cdb-migrations
 * export ES_NODES='http://localhost:9200'
+* make test
 ## Quick Notes
 * A facade is a software design pattern that abstracts the complexity of one or more software components behind a simple interface.
 In the context of microservice-based design, the facade pattern allows us to transparently compose or aggregate data across multiple, specialized microservices while providing a simple API for the facade clients to access it.
