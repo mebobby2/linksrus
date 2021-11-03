@@ -238,6 +238,6 @@ As another example, the component could utilize separate data stores for writes 
 ## Source Code
 https://github.com/PacktPublishing/Hands-On-Software-Engineering-with-Golang
 ## Upto
-Page 216
+Page 218
 
-Implementing an in-memory graph store
+Upserting edges
