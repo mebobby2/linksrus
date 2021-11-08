@@ -238,6 +238,6 @@ As another example, the component could utilize separate data stores for writes 
 ## Source Code
 https://github.com/PacktPublishing/Hands-On-Software-Engineering-with-Golang
 ## Upto
-Page 218
+Page 223
 
-Upserting edges
+Removing stale edges
