@@ -2,9 +2,11 @@ package memory
 
 import (
 	"sync"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/mebobby2/linksrus/linkgraph/graph"
+	"golang.org/x/xerrors"
 )
 
 var _ graph.Graph = (*InMemoryGraph)(nil)
@@ -57,4 +59,87 @@ func (s *InMemoryGraph) UpsertLink(link *graph.Link) error {
 	s.linkURLIndex[lCopy.URL] = lCopy
 	s.links[lCopy.ID] = lCopy
 	return nil
+}
+
+func (s *InMemoryGraph) UpsertEdge(edge *graph.Edge) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	_, srcExists := s.links[edge.Src]
+	_, dstExists := s.links[edge.Dst]
+	if !srcExists || !dstExists {
+		return xerrors.Errorf("upsert edge: %w", graph.ErrUnknownEdgeLinks)
+	}
+
+	for _, edgeId := range s.linkEdgeMap[edge.Src] {
+		existingEdge := s.edges[edgeId]
+		if existingEdge.Src == edge.Src && existingEdge.Dst == edge.Dst {
+			existingEdge.UpdatedAt = time.Now()
+			*edge = *existingEdge
+			return nil
+		}
+	}
+
+	for {
+		edge.ID = uuid.New()
+		if s.edges[edge.ID] == nil {
+			break
+		}
+	}
+
+	edge.UpdatedAt = time.Now()
+	eCopy := new(graph.Edge)
+	*eCopy = *edge
+	s.edges[eCopy.ID] = eCopy
+
+	s.linkEdgeMap[edge.Src] = append(s.linkEdgeMap[edge.Src], eCopy.ID)
+	return nil
+}
+
+func (s *InMemoryGraph) FindLink(id uuid.UUID) (*graph.Link, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	link := s.links[id]
+	if link == nil {
+		return nil, xerrors.Errorf("find link: %w", graph.ErrNotFound)
+	}
+
+	lCopy := new(graph.Link)
+	*lCopy = *link
+	return lCopy, nil
+
+}
+
+func (s *InMemoryGraph) Links(fromID, toID uuid.UUID, retrievedBefore time.Time) (graph.LinkIterator, error) {
+	from, to := fromID.String(), toID.String()
+
+	s.mu.RLock()
+	var list []*graph.Link
+	for linkID, link := range s.links {
+		if id := linkID.String(); id >= from && id < to && link.RetrieveAt.Before((retrievedBefore)) {
+			list = append(list, link)
+		}
+	}
+	s.mu.RUnlock()
+
+	return &linkIterator{s: s, links: list}, nil
+}
+
+func (s *InMemoryGraph) Edges(fromID, toID uuid.UUID, updatedBefore time.Time) (graph.EdgeIterator, error) {
+	from, to := fromID.String(), toID.String()
+	s.mu.RLock()
+	var list []*graph.Edge
+	for linkID := range s.links {
+		if id := linkID.String(); id < from || id >= to {
+			continue
+		}
+		for _, edgeID := range s.linkEdgeMap[linkID] {
+			if edge := s.edges[edgeID]; edge.UpdatedAt.Before(updatedBefore) {
+				list = append(list, edge)
+			}
+		}
+	}
+	s.mu.RUnlock()
+	return &edgeIterator{s: s, edges: list}, nil
 }
