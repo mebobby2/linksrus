@@ -11,10 +11,14 @@
     * java11
     * brew install elasticsearch
     * to start: elasticsearch
-* dependencies
+* Dependencies
     * start new module: go mod init github.com/mebobby2/linksrus
     * add new example: go get github.com/google/uuid
     * to install missing dependencies: go build or go test
+* DB Migrations
+    * brew install golang-migrate
+    * migrate create -ext sql -dir linkgraph/store/cdb/migrations -seq create_edges_table
+    * make run-cdb-migrations
 
 ### Test
 * export CDB_DSN='postgresql://root@localhost:26257/linkgraph?sslmode=disable'
@@ -230,6 +234,12 @@ The CQRS pattern belongs to the family of architectural patterns. The key idea b
 This separation allows us to execute different business logic paths for reads and writes, and, in effect, enables us to implement complex access patterns. For example, writes could be a synchronous process whereas reads might be asynchronous and provide a limited view over the data.
 
 As another example, the component could utilize separate data stores for writes and reads. Writes would eventually trickle into the read store but perhaps the read store data could also be augmented with external data obtained from other downstream components.
+
+### Why CockroachDB
+* It can easily scale horizontally just by increasing the number of nodes available to the cluster. CockroachDB clusters can automatically rebalance and heal themselves when nodes appear or go down.
+* CockroachDB is fully ACID-compliant and supports distributed SQL transactions.
+* The SQL flavor supported by CockroachDB is compatible with the PostgreSQL syntax.
+* CockroachDB implements the PostgreSQL wire protocol; this means that we do not require a specialized driver package to connect to the database but can simply use the battle-tested pure-Go Postgres package to connect to the database.
 
 ## Issues
 ### Elasticsearch start failure
