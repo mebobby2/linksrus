@@ -248,6 +248,8 @@ As another example, the component could utilize separate data stores for writes 
 ## Source Code
 https://github.com/PacktPublishing/Hands-On-Software-Engineering-with-Golang
 ## Upto
-Page 229
+Page 238
 
-Iterating links/edges
+An in-memory Indexer implementation using bleve
+
+Before that: set up the base test package https://github.com/PacktPublishing/Hands-On-Software-Engineering-with-Golang/tree/master/Chapter06/textindexer/index/indextest
