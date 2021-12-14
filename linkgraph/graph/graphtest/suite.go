@@ -18,8 +18,8 @@ func (s *SuiteBase) SetGraph(g graph.Graph) {
 
 func (s *SuiteBase) TestUpsertLink(c *gc.C) {
 	original := &graph.Link{
-		URL:        "https://example.com",
-		RetrieveAt: time.Now().Add(-10 * time.Hour),
+		URL:         "https://example.com",
+		RetrievedAt: time.Now().Add(-10 * time.Hour),
 	}
 
 	err := s.g.UpsertLink(original)

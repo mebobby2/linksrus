@@ -18,7 +18,7 @@ type CockroachDbGraphTestSuite struct {
 	db *sql.DB
 }
 
-func (s *CockroachDbGraphTestSuite) SetupSuite(c *gc.C) {
+func (s *CockroachDbGraphTestSuite) SetUpSuite(c *gc.C) {
 	dsn := os.Getenv(("CDB_DSN"))
 	if dsn == "" {
 		c.Skip("Missing CDB_DSN envvar; skipping cockroachdb-backend graph test suite")

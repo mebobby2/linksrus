@@ -7,9 +7,9 @@ import (
 )
 
 type Link struct {
-	ID         uuid.UUID
-	URL        string
-	RetrieveAt time.Time
+	ID          uuid.UUID
+	URL         string
+	RetrievedAt time.Time
 }
 
 type Edge struct {

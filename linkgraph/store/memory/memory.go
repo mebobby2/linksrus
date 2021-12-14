@@ -38,10 +38,10 @@ func (s *InMemoryGraph) UpsertLink(link *graph.Link) error {
 
 	if existing := s.linkURLIndex[link.URL]; existing != nil {
 		link.ID = existing.ID
-		origTs := existing.RetrieveAt
+		origTs := existing.RetrievedAt
 		*existing = *link
-		if origTs.After(existing.RetrieveAt) {
-			existing.RetrieveAt = origTs
+		if origTs.After(existing.RetrievedAt) {
+			existing.RetrievedAt = origTs
 		}
 		return nil
 	}
@@ -117,7 +117,7 @@ func (s *InMemoryGraph) Links(fromID, toID uuid.UUID, retrievedBefore time.Time)
 	s.mu.RLock()
 	var list []*graph.Link
 	for linkID, link := range s.links {
-		if id := linkID.String(); id >= from && id < to && link.RetrieveAt.Before((retrievedBefore)) {
+		if id := linkID.String(); id >= from && id < to && link.RetrievedAt.Before((retrievedBefore)) {
 			list = append(list, link)
 		}
 	}
