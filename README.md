@@ -248,6 +248,6 @@ As another example, the component could utilize separate data stores for writes 
 ## Source Code
 https://github.com/PacktPublishing/Hands-On-Software-Engineering-with-Golang
 ## Upto
-Page 227
+Page 229
 
-Upserting links
+Iterating links/edges
