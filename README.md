@@ -9,7 +9,8 @@
     * cockroach sql --insecure -e 'CREATE DATABASE linkgraph;'
 * Elasticsearch
     * java11
-    * brew install elasticsearch
+    * brew tap elastic/tap
+    * brew install elastic/tap/elasticsearch-full
     * to start: elasticsearch
 * Dependencies
     * start new module: go mod init github.com/mebobby2/linksrus
