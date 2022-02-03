@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/blevesearch/bleve v1.0.14 // indirect
+	github.com/elastic/go-elasticsearch v0.0.0 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/lib/pq v1.10.4 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
