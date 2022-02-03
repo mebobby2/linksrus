@@ -249,6 +249,6 @@ As another example, the component could utilize separate data stores for writes 
 ## Source Code
 https://github.com/PacktPublishing/Hands-On-Software-Engineering-with-Golang
 ## Upto
-Page 245
+Page 274
 
-Scaling across an Elasticsearch indexer implementation
+Fixed worker pools are quite easy to set up
