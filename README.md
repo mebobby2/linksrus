@@ -242,6 +242,27 @@ As another example, the component could utilize separate data stores for writes 
 * The SQL flavor supported by CockroachDB is compatible with the PostgreSQL syntax.
 * CockroachDB implements the PostgreSQL wire protocol; this means that we do not require a specialized driver package to connect to the database but can simply use the battle-tested pure-Go Postgres package to connect to the database.
 
+### Go's Empty Struct
+https://stackoverflow.com/questions/47544156/what-uses-a-type-with-empty-struct-has-in-go
+
+Empty struct struct{} is realized in a special way in Go.
+* It's a smallest building block in Go. It's size is literally 0 bytes.
+* If it has zero size. you may create a slice of 1000's empty structures and this slice will be very tiny. Because really Go stores only a number of them in the slice but not them itself. The same story with channels.
+* All pointers to it always point to the same special place in memory.
+* Very useful in channels when you notify about some event but you don't need to pass any information about it, only a fact. Best solution is to pass an empty structure because it will only increment a counter in the channel but not assign memory, copy elements and so on. Sometime people use Boolean values for this purpose, but it's much worse.
+* Zero size container for methods. You may want have a mock for testing interfaces. Often you don't need data on it, just methods with predefined input and output.
+* Go has no Set object. Bit can be easily realized as a map[keyType]struct{}. This way map keeps only keys and no values.
+
+https://stackoverflow.com/questions/45122905/how-do-struct-and-struct-work-in-go
+
+How do struct{} and struct{}{} work in Go?
+
+struct is a keyword in Go. It is used to define struct types, which is a sequence of named elements.
+
+The struct{} is a struct type with zero elements. It is often used when no information is to be stored. It has the benefit of being 0-sized, so usually no memory is required to store a value of type struct{}.
+
+struct{}{} on the other hand is a composite literal, it constructs a value of type struct{}. A composite literal constructs values for types such as structs, arrays, maps and slices. Its syntax is the type followed by the elements in braces. Since the "empty" struct (struct{}) has no fields, the elements list is also empty.
+
 ## Issues
 ### Elasticsearch start failure
 * sudo mkdir /usr/local/var/lib/elasticsearch
@@ -249,6 +270,6 @@ As another example, the component could utilize separate data stores for writes 
 ## Source Code
 https://github.com/PacktPublishing/Hands-On-Software-Engineering-with-Golang
 ## Upto
-Page 274
+Page 277
 
-Fixed worker pools are quite easy to set up
+Before that: undderstand what is stop: keywork in the linkcrawler dynamic worker pool code
