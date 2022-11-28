@@ -270,6 +270,4 @@ struct{}{} on the other hand is a composite literal, it constructs a value of ty
 ## Source Code
 https://github.com/PacktPublishing/Hands-On-Software-Engineering-with-Golang
 ## Upto
-Page 277
-
-Before that: undderstand what is stop: keywork in the linkcrawler dynamic worker pool code
+Page 285
